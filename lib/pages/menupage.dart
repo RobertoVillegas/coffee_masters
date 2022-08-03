@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 
 class MenuPage extends StatelessWidget {
   final DataManager dataManager;
-  const MenuPage({Key? key, required this.dataManager}) : super(key: key);
+
+  const MenuPage({
+    Key? key,
+    required this.dataManager,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,22 +22,24 @@ class MenuPage extends StatelessWidget {
           return ListView.builder(
             itemCount: categories.length,
             itemBuilder: (context, index) {
+              var category = categories[index];
+
               return Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(categories[index].name),
+                    child: Text(category.name),
                   ),
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const ClampingScrollPhysics(),
-                    itemCount: categories[index].products.length,
+                    itemCount: category.products.length,
                     itemBuilder: (context, productIndex) {
-                      var product = categories[index].products[productIndex];
+                      var product = category.products[productIndex];
                       return ProductItem(
                         product: product,
-                        onAdd: () {
-                          dataManager.cartAdd(product);
+                        onAdd: (addedProduct) {
+                          dataManager.cartAdd(addedProduct);
                         },
                       );
                     },
@@ -75,7 +81,11 @@ class ProductItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(product.imageUrl),
+            Image.network(
+              product.imageUrl,
+              width: double.infinity,
+              fit: BoxFit.fitWidth,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -91,7 +101,7 @@ class ProductItem extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text("\$${product.price}"),
+                      child: Text("\$${product.price.toStringAsFixed(2)}"),
                       // Text(product.price.toString()),
                     ),
                   ],
