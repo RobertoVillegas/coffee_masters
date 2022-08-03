@@ -1,6 +1,8 @@
+import 'package:coffee_masters/pages/menupage.dart';
+import 'package:coffee_masters/pages/orderpage.dart';
 import 'package:flutter/material.dart';
 
-import 'offerspage.dart';
+import 'pages/offerspage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -81,13 +83,46 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  var selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
+    Widget currentWidgetPage = const Text("!!!!");
+
+    switch (selectedIndex) {
+      case 0:
+        currentWidgetPage = const MenuPage();
+        break;
+      case 1:
+        currentWidgetPage = const OffersPage();
+        break;
+      case 2:
+        currentWidgetPage = const OrderPage();
+        break;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Image.asset("images/logo.png"),
       ),
-      body: const OffersPage(),
+      bottomNavigationBar: BottomNavigationBar(
+          currentIndex: selectedIndex,
+          onTap: (index) {
+            setState(() {
+              selectedIndex = index;
+            });
+          },
+          backgroundColor: Theme.of(context).primaryColor,
+          selectedItemColor: Colors.yellow.shade400,
+          unselectedItemColor: Colors.brown.shade50,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(label: "Menu", icon: Icon(Icons.coffee)),
+            BottomNavigationBarItem(
+                label: "Offers", icon: Icon(Icons.local_offer)),
+            BottomNavigationBarItem(
+                label: "Order", icon: Icon(Icons.shopping_cart))
+          ]),
+      body: currentWidgetPage,
     );
   }
 }
