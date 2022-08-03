@@ -8,21 +8,50 @@ class MenuPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var product = Product(id: 1, name: "Dummy product", price: 1.25, image: "");
-    var product2 =
-        Product(id: 2, name: "Dummy product 2", price: 2.25, image: "");
+    return FutureBuilder(
+      future: dataManager.getMenu(),
+      builder: ((context, snapshot) {
+        if (snapshot.hasData) {
+          // The future has completed, data is ready
+          var categories = snapshot.data as List<Category>;
 
-    return ListView(
-      children: [
-        ProductItem(
-          product: product,
-          onAdd: () {},
-        ),
-        ProductItem(
-          product: product2,
-          onAdd: () {},
-        ),
-      ],
+          return ListView.builder(
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(categories[index].name),
+                  ),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: categories[index].products.length,
+                    itemBuilder: (context, productIndex) {
+                      var product = categories[index].products[productIndex];
+                      return ProductItem(
+                        product: product,
+                        onAdd: () {
+                          dataManager.cartAdd(product);
+                        },
+                      );
+                    },
+                  )
+                ],
+              );
+            },
+          );
+        } else {
+          if (snapshot.hasError) {
+            // Data is not there, because of an error
+            return const Text("There was an error");
+          } else {
+            // Data is in progress (the future didn't complete yet)
+            return const CircularProgressIndicator();
+          }
+        }
+      }),
     );
   }
 }
@@ -46,9 +75,7 @@ class ProductItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(
-              "images/black_coffee.png",
-            ),
+            Image.network(product.imageUrl),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

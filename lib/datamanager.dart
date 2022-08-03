@@ -9,17 +9,21 @@ class DataManager {
 
   fetchMenu() async {
     try {
-      const url = "https://firtman.github.io/coffeemasters/api/menu.json";
+      const url = 'https://firtman.github.io/coffeemasters/api/menu.json';
       var response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
         var body = response.body;
         var decodedData = jsonDecode(body) as List<dynamic>;
+        _menu = [];
 
         for (var json in decodedData) {
-          var category = Category.fromJson(json);
-          _menu?.add(category);
+          // var category = Category.fromJson(json);
+          // _menu?.add(category);
+          _menu?.add(Category.fromJson(json));
         }
+      } else {
+        throw Exception("Error loading data");
       }
     } catch (err) {
       throw Exception("Error loading data");
